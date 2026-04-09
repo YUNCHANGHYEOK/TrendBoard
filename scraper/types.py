@@ -1,8 +1,11 @@
 from dataclasses import dataclass
+from typing import Literal
+
+Source = Literal["github", "hn", "arxiv", "papers"]
 
 @dataclass
 class RawArticle:
     title: str
     source_url: str
-    source: str  # "github" | "hn" | "arxiv" | "papers"
+    source: Source
     raw_text: str  # Gemini에 전달할 원문 텍스트
