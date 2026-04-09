@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrendBoard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+  }
+  .container { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  /* 헤더 */
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+  /* 필터 탭 */
+  .filters { display: flex; gap: 8px; margin-bottom: 16px; }
+  .filter-btn {
+    padding: 6px 14px; border-radius: 20px; border: none; cursor: pointer;
+    font-size: 12px; font-weight: 500; background: #1e293b; color: #94a3b8;
+  }
+  .filter-btn.active { background: #6366f1; color: #fff; }
+
+  /* TOP 픽 카드 */
+  .top-pick {
+    background: linear-gradient(135deg, #312e81, #1e1b4b);
+    border: 1px solid #4338ca;
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .top-pick-label {
+    display: flex; align-items: center; gap: 6px;
+    color: #a5b4fc; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+  }
+  .top-pick-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+  .top-pick-summary { color: #94a3b8; font-size: 13px; line-height: 1.6; margin-bottom: 12px; }
+  .top-pick-footer { display: flex; justify-content: space-between; align-items: center; }
+
+  /* 섹션 라벨 */
+  .section-label {
+    font-size: 10px; color: #64748b; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 10px;
+  }
+
+  /* 기사 카드 */
+  .card { background: #1e293b; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .source-tag {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px;
+  }
+  .source-github { background: #f59e0b; color: #000; }
+  .source-hn { background: #ef4444; color: #fff; }
+  .source-arxiv { background: #6366f1; color: #fff; }
+  .source-papers { background: #10b981; color: #fff; }
+  .card-time { font-size: 11px; color: #64748b; }
+  .card-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+  .card-summary { font-size: 12px; color: #94a3b8; line-height: 1.6; margin-bottom: 10px; }
+  .card-link { font-size: 11px; color: #6366f1; text-decoration: none; }
+  .card-link:hover { text-decoration: underline; }
+
+  /* 로딩/빈 상태 */
+  .status { text-align: center; color: #64748b; padding: 40px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="header-title">TrendBoard</div>
+      <div class="header-sub" id="last-updated">불러오는 중...</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">전체</button>
+    <button class="filter-btn" onclick="setFilter('ai', this)">AI/논문</button>
+    <button class="filter-btn" onclick="setFilter('dev', this)">GitHub/HN</button>
+  </div>
+
+  <div id="top-pick-container"></div>
+  <div class="section-label" id="rest-label" style="display:none">나머지 소식</div>
+  <div id="articles-container"><p class="status">불러오는 중...</p></div>
+</div>
+
+<script>
+  let currentFilter = 'all';
+
+  const SOURCE_LABELS = { github: 'GitHub', hn: 'HN', arxiv: 'arXiv', papers: 'Papers' };
+  const SOURCE_CLASS = { github: 'source-github', hn: 'source-hn', arxiv: 'source-arxiv', papers: 'source-papers' };
+
+  function timeAgo(dateStr) {
+    const diff = (Date.now() - new Date(dateStr + 'Z').getTime()) / 1000;
+    if (diff < 3600) return `${Math.floor(diff / 60)}분 전`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
+    return `${Math.floor(diff / 86400)}일 전`;
+  }
+
+  function renderTopPick(article) {
+    const container = document.getElementById('top-pick-container');
+    if (!article) { container.innerHTML = ''; return; }
+    container.innerHTML = `
+      <div class="top-pick">
+        <div class="top-pick-label">⭐ 오늘의 TOP 픽</div>
+        <div class="top-pick-title">${article.title}</div>
+        <div class="top-pick-summary">${article.summary_ko}</div>
+        <div class="top-pick-footer">
+          <span class="source-tag ${SOURCE_CLASS[article.source]}">${SOURCE_LABELS[article.source]}</span>
+          <a class="card-link" href="${article.source_url}" target="_blank">원문 보기 →</a>
+        </div>
+      </div>`;
+  }
+
+  function renderArticles(articles) {
+    const container = document.getElementById('articles-container');
+    if (!articles.length) {
+      container.innerHTML = '<p class="status">아직 수집된 글이 없어요.<br>오전 8시 또는 오후 8시에 자동 수집됩니다.</p>';
+      return;
+    }
+    container.innerHTML = articles.map(a => `
+      <div class="card">
+        <div class="card-header">
+          <span class="source-tag ${SOURCE_CLASS[a.source]}">${SOURCE_LABELS[a.source]}</span>
+          <span class="card-time">${timeAgo(a.collected_at)}</span>
+        </div>
+        <div class="card-title">${a.title}</div>
+        <div class="card-summary">${a.summary_ko}</div>
+        <a class="card-link" href="${a.source_url}" target="_blank">원문 보기 →</a>
+      </div>`).join('');
+  }
+
+  async function loadArticles() {
+    const url = currentFilter === 'all' ? '/api/articles' : `/api/articles?source_group=${currentFilter}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const articles = data.articles || [];
+      const topPick = articles.find(a => a.is_top_pick);
+      const rest = articles.filter(a => !a.is_top_pick);
+
+      renderTopPick(topPick);
+      document.getElementById('rest-label').style.display = rest.length ? 'block' : 'none';
+      renderArticles(rest);
+
+      if (articles.length) {
+        document.getElementById('last-updated').textContent =
+          `마지막 수집: ${timeAgo(articles[0].collected_at)}`;
+      } else {
+        document.getElementById('last-updated').textContent = '아직 수집 전';
+      }
+    } catch (e) {
+      document.getElementById('articles-container').innerHTML =
+        '<p class="status">데이터를 불러올 수 없어요.</p>';
+    }
+  }
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadArticles();
+  }
+
+  loadArticles();
+</script>
+</body>
+</html>
