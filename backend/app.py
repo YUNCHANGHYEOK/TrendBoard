@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from pathlib import Path
+from typing import Literal
 from backend.database import init_db, insert_articles, get_articles
 
 
@@ -16,15 +17,14 @@ app = FastAPI(lifespan=lifespan)
 
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 FRONTEND_DIR.mkdir(exist_ok=True)
-if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
 class ArticleIn(BaseModel):
     title: str
     summary_ko: str
     source_url: str
-    source: str
+    source: Literal["github", "hn", "arxiv", "papers"]
     is_top_pick: bool = False
 
 
@@ -48,4 +48,8 @@ def api_collect(payload: CollectPayload):
 @app.get("/")
 def serve_index():
     from fastapi.responses import FileResponse
-    return FileResponse(FRONTEND_DIR / "index.html")
+    from fastapi import HTTPException
+    path = FRONTEND_DIR / "index.html"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Frontend not yet built")
+    return FileResponse(path)

@@ -1,5 +1,4 @@
 import sqlite3
-import os
 from pathlib import Path
 
 DB_PATH = Path(__file__).parent.parent / "trendboard.db"
@@ -12,32 +11,38 @@ def get_conn() -> sqlite3.Connection:
 
 
 def init_db() -> None:
-    with get_conn() as conn:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS articles (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                summary_ko TEXT NOT NULL,
-                source_url TEXT NOT NULL,
-                source TEXT NOT NULL,
-                is_top_pick INTEGER DEFAULT 0,
-                collected_at DATETIME NOT NULL DEFAULT (datetime('now'))
-            )
-        """)
-        conn.commit()
+    conn = get_conn()
+    try:
+        with conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS articles (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    summary_ko TEXT NOT NULL,
+                    source_url TEXT NOT NULL,
+                    source TEXT NOT NULL,
+                    is_top_pick INTEGER DEFAULT 0,
+                    collected_at DATETIME NOT NULL DEFAULT (datetime('now'))
+                )
+            """)
+    finally:
+        conn.close()
 
 
 def insert_articles(articles: list[dict]) -> int:
-    with get_conn() as conn:
-        conn.executemany(
-            """
-            INSERT INTO articles (title, summary_ko, source_url, source, is_top_pick)
-            VALUES (:title, :summary_ko, :source_url, :source, :is_top_pick)
-            """,
-            articles,
-        )
-        conn.commit()
-    return len(articles)
+    conn = get_conn()
+    try:
+        with conn:
+            conn.executemany(
+                """
+                INSERT INTO articles (title, summary_ko, source_url, source, is_top_pick)
+                VALUES (:title, :summary_ko, :source_url, :source, :is_top_pick)
+                """,
+                articles,
+            )
+        return conn.total_changes
+    finally:
+        conn.close()
 
 
 def get_articles(source_group: str | None = None, limit: int = 50) -> list[dict]:
@@ -45,7 +50,8 @@ def get_articles(source_group: str | None = None, limit: int = 50) -> list[dict]
         "ai": ("arxiv", "papers"),
         "dev": ("github", "hn"),
     }
-    with get_conn() as conn:
+    conn = get_conn()
+    try:
         if source_group and source_group in source_filter:
             placeholders = ",".join("?" * len(source_filter[source_group]))
             rows = conn.execute(
@@ -57,4 +63,6 @@ def get_articles(source_group: str | None = None, limit: int = 50) -> list[dict]
                 "SELECT * FROM articles ORDER BY collected_at DESC LIMIT ?",
                 (limit,),
             ).fetchall()
+    finally:
+        conn.close()
     return [dict(row) for row in rows]
