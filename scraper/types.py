@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Literal
 
-Source = Literal["github", "hn", "arxiv", "papers", "cvpr", "iccv", "eccv"]
+Source = Literal["github", "hn", "arxiv", "papers", "cvpr", "iccv", "eccv", "pytorch_kr", "hn_ai", "huggingface"]
 
 @dataclass
 class RawArticle:
