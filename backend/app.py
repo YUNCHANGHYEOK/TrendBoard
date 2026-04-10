@@ -29,7 +29,7 @@ class ArticleIn(BaseModel):
     title: str
     summary_ko: str
     source_url: str
-    source: Literal["github", "hn", "arxiv", "papers", "cvpr", "iccv", "eccv"]
+    source: Literal["github", "hn", "arxiv", "papers", "cvpr", "iccv", "eccv", "pytorch_kr", "hn_ai", "huggingface"]
     is_top_pick: bool = False
 
 
