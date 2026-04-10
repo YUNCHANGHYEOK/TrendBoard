@@ -1,0 +1,259 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --muted-strong: #64748b;
+  --accent: #6366f1;
+  --accent-deep: #312e81;
+  --accent-darker: #1e1b4b;
+  --border: #4338ca;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.header-sub {
+  margin-top: 2px;
+  color: var(--muted-strong);
+  font-size: 11px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.collect-btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent), #818cf8);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  white-space: nowrap;
+}
+
+.collect-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.top-pick {
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-deep), var(--accent-darker));
+}
+
+.run-note {
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-radius: 10px;
+  background: rgba(49, 46, 129, 0.35);
+  color: #c7d2fe;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.run-note.is-error {
+  border-color: rgba(248, 113, 113, 0.45);
+  background: rgba(127, 29, 29, 0.3);
+  color: #fecaca;
+}
+
+.top-pick-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  color: #a5b4fc;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.top-pick-title {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.top-pick-summary {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.top-pick-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label {
+  margin-bottom: 10px;
+  color: var(--muted-strong);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card {
+  margin-bottom: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.source-tag {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.source-github {
+  background: #f59e0b;
+  color: #000;
+}
+
+.source-cvpr {
+  background: #2563eb;
+  color: #fff;
+}
+
+.source-iccv {
+  background: #059669;
+  color: #fff;
+}
+
+.source-eccv {
+  background: #dc2626;
+  color: #fff;
+}
+
+.source-paper {
+  background: #475569;
+  color: #fff;
+}
+
+.source-hn {
+  background: #ef4444;
+  color: #fff;
+}
+
+.source-arxiv {
+  background: #6366f1;
+  color: #fff;
+}
+
+.source-papers {
+  background: #10b981;
+  color: #fff;
+}
+
+.card-time {
+  color: var(--muted-strong);
+  font-size: 11px;
+}
+
+.card-title {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.paper-meta {
+  margin-bottom: 6px;
+  color: var(--muted-strong);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.card-summary {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.card-link {
+  color: var(--accent);
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+}
+
+.status {
+  padding: 40px 0;
+  color: var(--muted-strong);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+}

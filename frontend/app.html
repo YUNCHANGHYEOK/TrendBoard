@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrendBoard</title>
+<link rel="stylesheet" href="/static/styles.css">
+<script src="/static/app_clean.js" defer></script>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <div class="header-title">TrendBoard</div>
+      <div class="header-sub" id="last-updated">Loading...</div>
+    </div>
+    <button class="collect-btn" id="collect-now-btn" type="button">지금 수집</button>
+  </div>
+
+  <div class="filters" role="tablist" aria-label="Article filters">
+    <button class="filter-btn active" data-filter="all" type="button">All</button>
+    <button class="filter-btn" data-filter="ai" type="button">Vision Papers</button>
+    <button class="filter-btn" data-filter="dev" type="button">GitHub</button>
+  </div>
+
+  <div class="run-note" id="run-note" hidden></div>
+  <div id="top-pick-container"></div>
+  <div class="section-label" id="rest-label" style="display:none">More Stories</div>
+  <div id="articles-container"><p class="status">Loading...</p></div>
+</div>
+</body>
+</html>
