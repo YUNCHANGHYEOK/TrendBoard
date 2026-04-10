@@ -1,21 +1,24 @@
 import httpx
 from scraper.types import RawArticle
 
-PAPERS_API = "https://paperswithcode.com/api/v1/papers/?ordering=-published&page_size=10"
+# paperswithcode.com API redirects to HuggingFace; use HF daily papers API instead.
+HF_DAILY_PAPERS_API = "https://huggingface.co/api/daily_papers"
 
 
 def fetch_papers_with_code(limit: int = 10) -> list[RawArticle]:
-    response = httpx.get(PAPERS_API, timeout=30)
+    response = httpx.get(HF_DAILY_PAPERS_API, timeout=30)
     response.raise_for_status()
-    results = response.json().get("results", [])
+    results = response.json()
 
     articles: list[RawArticle] = []
     for item in results[:limit]:
-        url = item.get("url_abs") or item.get("url_pdf")
-        if not url:
+        paper = item.get("paper", {})
+        paper_id = paper.get("id", "")
+        if not paper_id:
             continue
-        title = item.get("title", "").strip()
-        abstract = item.get("abstract", "").replace("\n", " ").strip()
+        title = paper.get("title", "").strip()
+        abstract = paper.get("summary", "").replace("\n", " ").strip()
+        url = f"https://huggingface.co/papers/{paper_id}"
 
         articles.append(
             RawArticle(

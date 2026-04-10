@@ -1,4 +1,5 @@
 import feedparser
+import httpx
 from scraper.types import RawArticle
 
 ARXIV_FEEDS = [
@@ -12,7 +13,11 @@ def fetch_arxiv(limit_per_feed: int = 8) -> list[RawArticle]:
     seen_urls: set[str] = set()
 
     for feed_url in ARXIV_FEEDS:
-        feed = feedparser.parse(feed_url)
+        # feedparser uses urllib which fails on Windows due to SSL cert issues.
+        # Fetch the raw content via httpx (verify=False) and parse from bytes.
+        response = httpx.get(feed_url, timeout=30, verify=False)
+        response.raise_for_status()
+        feed = feedparser.parse(response.content)
         for entry in feed.entries[:limit_per_feed]:
             url = getattr(entry, "link", "")
             if url in seen_urls:

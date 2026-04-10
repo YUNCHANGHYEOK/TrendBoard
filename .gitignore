@@ -11,3 +11,10 @@ venv/
 dist/
 *.db-journal
 *.db-wal
+
+# Logs
+*.log
+root-server.*.log
+
+# Backups
+.codex_backup_*/
