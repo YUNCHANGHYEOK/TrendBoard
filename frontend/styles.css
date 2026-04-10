@@ -214,6 +214,21 @@ body {
   color: #fff;
 }
 
+.source-pytorch-kr {
+  background: #ee4c2c;
+  color: #fff;
+}
+
+.source-hn-ai {
+  background: #ff6600;
+  color: #fff;
+}
+
+.source-huggingface {
+  background: #ffd21e;
+  color: #1a1a1a;
+}
+
 .card-time {
   color: var(--muted-strong);
   font-size: 11px;

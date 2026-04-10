@@ -6,6 +6,9 @@ const SOURCE_LABELS = {
   hn: "HN",
   arxiv: "arXiv",
   papers: "Papers",
+  pytorch_kr: "PyTorch KR",
+  hn_ai: "HN AI",
+  huggingface: "HuggingFace",
 };
 
 const SOURCE_CLASS = {
@@ -16,6 +19,9 @@ const SOURCE_CLASS = {
   hn: "source-hn",
   arxiv: "source-arxiv",
   papers: "source-papers",
+  pytorch_kr: "source-pytorch-kr",
+  hn_ai: "source-hn-ai",
+  huggingface: "source-huggingface",
 };
 
 const PAPER_META_LABELS = {
@@ -24,6 +30,7 @@ const PAPER_META_LABELS = {
   eccv: "ECCV 2024 발표 논문",
   arxiv: "arXiv 논문",
   papers: "추천 논문",
+  huggingface: "HuggingFace 오늘의 논문",
 };
 
 let currentFilter = "all";
