@@ -154,8 +154,6 @@ def get_articles(source_group: str | None = None, limit: int = 50) -> list[dict]
     source_filter = {
         "papers": ("cvpr", "iccv", "eccv", "arxiv", "papers", "huggingface"),
         "news": ("pytorch_kr", "hn_ai", "hn"),
-        "ai": ("cvpr", "iccv", "eccv", "arxiv", "papers", "huggingface"),
-        "dev": ("github",),
     }
     conn = get_conn()
     try:

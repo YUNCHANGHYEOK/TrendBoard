@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 from backend.database import utc_now_sqlite
 from backend.services import save_articles_batch, save_collection_run
-from scraper.sources.news import fetch_huggingface_papers, fetch_hn_ai, fetch_pytorch_kr
+from scraper.sources.news import fetch_huggingface_papers, fetch_pytorch_kr
 from scraper.sources.vision import fetch_cvpr_papers, fetch_eccv_papers, fetch_iccv_papers
 from scraper.summarizer import pick_top_article, summarize_articles
 
@@ -18,21 +18,19 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger(__name__)
 
 SOURCE_LIMITS = {
-    "cvpr": 5,
-    "iccv": 5,
-    "eccv": 5,
+    "cvpr": 1,
+    "iccv": 1,
+    "eccv": 1,
+    "huggingface": 2,
     "pytorch_kr": 5,
-    "hn_ai": 5,
-    "huggingface": 5,
 }
 
 SOURCE_FETCHERS = {
     "cvpr": partial(fetch_cvpr_papers, limit=SOURCE_LIMITS["cvpr"]),
     "iccv": partial(fetch_iccv_papers, limit=SOURCE_LIMITS["iccv"]),
     "eccv": partial(fetch_eccv_papers, limit=SOURCE_LIMITS["eccv"]),
-    "pytorch_kr": partial(fetch_pytorch_kr, limit=SOURCE_LIMITS["pytorch_kr"]),
-    "hn_ai": partial(fetch_hn_ai, limit=SOURCE_LIMITS["hn_ai"]),
     "huggingface": partial(fetch_huggingface_papers, limit=SOURCE_LIMITS["huggingface"]),
+    "pytorch_kr": partial(fetch_pytorch_kr, limit=SOURCE_LIMITS["pytorch_kr"]),
 }
 
 """
