@@ -26,6 +26,9 @@ def _get_model() -> genai.GenerativeModel:
     return genai.GenerativeModel("gemini-2.5-flash-lite")
 
 
+_RETRY_WAITS = [20, 40, 60]  # 429 발생 시 대기 시간(초) — 무료 tier RPM 대응
+
+
 def _generate_with_retry(model: genai.GenerativeModel, prompt: str, retries: int = 3) -> str | None:
     """Generate content with retry on rate-limit (429). Returns None if quota exhausted."""
     for attempt in range(retries):
@@ -35,7 +38,7 @@ def _generate_with_retry(model: genai.GenerativeModel, prompt: str, retries: int
             msg = str(e)
             if "429" in msg or "quota" in msg.lower():
                 if attempt < retries - 1:
-                    wait = 5 * (attempt + 1)
+                    wait = _RETRY_WAITS[attempt]
                     log.warning(f"Gemini 429 rate limit, {wait}초 후 재시도 ({attempt+1}/{retries})...")
                     time.sleep(wait)
                 else:
@@ -62,7 +65,7 @@ def summarize_articles(raw_articles: list[RawArticle]) -> list[dict]:
             }
         )
         if i < len(raw_articles) - 1:
-            time.sleep(8)  # 무료 RPM 제한 준수 (안전 마진 포함)
+            time.sleep(15)  # 요청 간 15초 대기 (분당 4건 이하로 유지)
     return results
 
 

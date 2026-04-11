@@ -217,9 +217,17 @@ def _build_raw_text(config: ConferenceConfig, title: str, authors: str, abstract
     return "\n".join(parts)
 
 
+import logging as _logging
+_vlog = _logging.getLogger(__name__)
+
+
 def _fetch_conference_papers(source: Literal["cvpr", "iccv", "eccv"], limit: int) -> list[RawArticle]:
     config = CONFERENCES[source]
-    listing_html = _get_html(config.listing_url)
+    try:
+        listing_html = _get_html(config.listing_url)
+    except Exception as exc:
+        _vlog.warning(f"{config.label} listing 페이지 접속 실패, 건너뜀: {exc}")
+        return []
 
     if source in {"cvpr", "iccv"}:
         entries = _parse_cvf_listing(listing_html, limit)
